@@ -38,24 +38,109 @@
 
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css">
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 
 </head>
 <body>
+<div class="container"><div class="row">
 
-<h2 id="loading-data-from-google-docs">Loading Data from Google Docs</h2>
-Google Doc url: 'https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0'
+<h1 id="loading-data-from-google-docs">Loading Data from Google Docs with Recline</h1>
+  <div class="well well-sm">
+  <p>
+  This is a quick demo of how easy it is to create a mini-dashboard with <a href="http://reclinejs.com">Recline.js</a> with data from Google docs.
+  </p>
+  See the <a href="https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0">Google Doc url</a> and 
+  <a href="#code">code</a>.
+  </p>
+  </div>
 
 <h3>Select Option</h3>
 <select class="chosen-select" style="width: 100%" id="search-select" multiple>
   <option value=""></option>
 </select>
+<h3>Charts</h3>
 <div class="row">
   <div class="col-md-6"><div id="chart-1">&nbsp;</div></div>
   <div class="col-md-6"><div id="chart-2">&nbsp;</div></div>
 </div>
 <h3 id="result">Grid</h3>
 <div id="my-gdocs" class="doc-ex-rendered">&nbsp;</div>
-  
+<h3 id="code">Code</h3>
+
+<div id="snippet">
+<pre><code class="javascript">
+// Add grid.
+var dataset = new recline.Model.Dataset({
+  url: 'https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0',
+  backend: 'gdocs'
+});
+
+var grid = new recline.View.Grid({
+  model: dataset
+});
+
+$('#my-gdocs').append(grid.el);
+
+// Add graph 1.
+var $el = $('#chart-1');
+var graph = new recline.View.Graph({
+  model: dataset,
+  state: {
+    graphType: "columns",
+    group: "schoolname",
+    series: ["schooltotalstudents"]
+  }
+});
+$el.append(graph.el);
+graph.render();
+graph.redraw();
+
+// Add graph 2.
+var $el = $('#chart-2');
+var graph2 = new recline.View.Graph({
+  model: dataset,
+  state: {
+    graphType: "bars",
+    group: "schoolname",
+    series: ["schooltotalstudents"]
+  }
+});
+$el.append(graph2.el);
+graph2.render();
+graph2.redraw();
+
+// Add chosen.
+$(".chosen-select").chosen();
+
+$(".chosen-select").chosen().change(function() {
+  var nums = $(this).val();
+  var query = new recline.Model.Query();
+  var query = {
+    filters: {
+     filter: {
+      type: "terms",
+      field: "schoolid",
+      terms: nums 
+     }
+   }
+  };
+  dataset.query(query);
+});
+
+// Fetch data.
+dataset.fetch().done(function(dataset) {
+  $.each(dataset.records.models, function(key, value) {
+    $('#search-select')
+      .append($("option")
+      .attr("value",value.attributes.schoolid)
+      .text(value.attributes.schoolname));
+  });
+  $("#search-select").trigger("chosen:updated");
+});
+</code></pre>
+ </div> 
   <script type="text/javascript" src="http://nucivic.github.io/nvd3_visualization_app/public/recline.backend.gdocs/backend.gdocs.js">&nbsp;</script>
   <script type="text/javascript" src="http://nucivic.github.io/nvd3_visualization_app/public/lodash/dist/lodash.js">&nbsp;</script>
   <script type="text/javascript" src="http://nucivic.github.io/nvd3_visualization_app/public/lodash.data/dist/lodash.data.min.js">&nbsp;</script>
@@ -94,31 +179,31 @@ $(".chosen-select").chosen().change(function() {
   dataset.query(query);
 });
 
-  var $el = $('#chart-1');
-  var graph = new recline.View.Graph({
-    model: dataset,
-    state: {
-      graphType: "columns",
-      group: "schoolname",
-      series: ["schooltotalstudents"]
-    }
-  });
-  $el.append(graph.el);
-  graph.render();
-  graph.redraw();
+var $el = $('#chart-1');
+var graph = new recline.View.Graph({
+  model: dataset,
+  state: {
+    graphType: "columns",
+    group: "schoolname",
+    series: ["schooltotalstudents"]
+  }
+});
+$el.append(graph.el);
+graph.render();
+graph.redraw();
 
-  var $el = $('#chart-2');
-  var graph2 = new recline.View.Graph({
-    model: dataset,
-    state: {
-      graphType: "bars",
-      group: "schoolname",
-      series: ["schooltotalstudents"]
-    }
-  });
-  $el.append(graph2.el);
-  graph2.render();
-  graph2.redraw();
+var $el = $('#chart-2');
+var graph2 = new recline.View.Graph({
+  model: dataset,
+  state: {
+    graphType: "bars",
+    group: "schoolname",
+    series: ["schooltotalstudents"]
+  }
+});
+$el.append(graph2.el);
+graph2.render();
+graph2.redraw();
 
 dataset.fetch().done(function(dataset) {
   $.each(dataset.records.models, function(key, value) {
@@ -131,5 +216,6 @@ dataset.fetch().done(function(dataset) {
 });
 </script>
 
+</div></div>
 </body>
 </html>
