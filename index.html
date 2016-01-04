@@ -94,10 +94,6 @@ $(".chosen-select").chosen().change(function() {
   dataset.query(query);
 });
 
-  var dataset2 = new recline.Model.Dataset({
-    records: data
-  });
-  
   var $el = $('#chart-1');
   var graph = new recline.View.Graph({
     model: dataset,
