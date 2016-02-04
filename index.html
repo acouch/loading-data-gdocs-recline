@@ -54,6 +54,27 @@
   See the <a href="https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0">Google Doc url</a> and 
   <a href="#code">code</a>.
   </p>
+  <p>
+  The Google Docs backend can easily be switched out for a CSV file. Just switch:
+
+  <div id="snippet">
+  <pre><code class="javascript">
+    var dataset = new recline.Model.Dataset({
+      url: 'https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0',
+      backend: 'gdocs'
+    });
+  </code>
+  </pre></div>
+    with:
+  <div id="snippet">
+  <pre><code class="javascript">
+    var dataset = new recline.Model.Dataset({
+      url: "dummy.csv",
+      backend: 'csv'
+    });
+  </code>
+  </pre></div>
+
   </div>
 
 <h3>Select Option</h3>
@@ -154,6 +175,8 @@ dataset.fetch().done(function(dataset) {
 var dataset = new recline.Model.Dataset({
   url: 'https://docs.google.com/spreadsheet/ccc?key=1R0_i_H-InRaQQK6_ECuenLeoAM2TH32edBPbue9c5Rc#gid=0',
   backend: 'gdocs'
+  //url: "dummy.csv",
+  //backend: 'csv'
 });
 
 var grid = new recline.View.Grid({
